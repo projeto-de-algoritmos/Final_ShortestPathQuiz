@@ -4,13 +4,11 @@ from PyQt5.QtGui import *
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-from networkx.generators.stochastic import stochastic_graph
-from networkx.generators.random_graphs import erdos_renyi_graph
+from graph import Graph
 import networkx as nx
 import random
-import numpy as np
 
-INF = 999
+INF = 999999
 
 class MainWindow(QWidget):
 
@@ -98,61 +96,22 @@ class MainWindow(QWidget):
 
     def generateGraphButton(self):
         self.figure.clf()
-        
-        graph = erdos_renyi_graph(self.qtdNodesSpinBox.value(), 0.5, directed=True)
 
-        stochastic_graph(graph)
+        graph = Graph(self.qtdNodesSpinBox.value())
 
-        colors = [
-            '#000000',
-            '#FF0000',
-            '#FFFF00',
-            '#00FF00',
-            '#008000',
-            '#00FFFF',
-            '#0000FF',
-            '#FF00FF',
-            '#808080'
-        ]
-
-        v = self.qtdNodesSpinBox.value()
-        g = np.zeros((v, v)).astype(int)
-
-        for i in range(v):
-            for j in range(v):
-                if i != j:
-                    g[i][j] = INF
-
-        for (u, v, w) in graph.edges(data=True):
-
-            existingEdge = [e for e in graph.out_edges(v) if e == (v, u)]
-            
-            if(len(existingEdge) == 0 or g[v][u] == INF):
-                w['weight'] = random.randint(1, 20)
-            else:
-                w['weight'] = g[v][u]
-
-            g[u][v] = w['weight']
-            w['color'] = random.choice(colors)
-            # print(u, v, w['weight'])
-
-        # print()
-
-        # Result table
-        distance = self.floyd_warshall(g, self.qtdNodesSpinBox.value())
-
-        # Print result table on console
-        # self.print_solution(distance, self.qtdNodesSpinBox.value())
+        graph.floydWarshall()
+        graph.printSolution()
+        print()
 
         pos = dict()
 
-        pos.update((n, (random.random()*10, random.random()*10)) for i, n in enumerate(set(graph.nodes(data=False)))) # put nodes from X at x=1
+        pos.update((n, (random.random()*10, random.random()*10)) for i, n in enumerate(set(graph.getGraph().nodes(data=False)))) # put nodes from X at x=1
         
-        edgeColors = nx.get_edge_attributes(graph, 'color')
-        nx.draw(graph, pos=pos, width=1, with_labels=True, edge_color=colors)
+        edgeColors = nx.get_edge_attributes(graph.getGraph(), 'color')
+        nx.draw(graph.getGraph(), pos=pos, width=1, with_labels=True, edge_color=graph.getColors())
 
-        weights = nx.get_edge_attributes(graph, 'weight')
-        nx.draw_networkx_edge_labels(graph, pos, edge_labels=weights)
+        weights = nx.get_edge_attributes(graph.getGraph(), 'weight')
+        nx.draw_networkx_edge_labels(graph.getGraph(), pos, edge_labels=weights)
 
         self.canvas.draw_idle()
 
