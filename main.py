@@ -124,10 +124,19 @@ class MainWindow(QWidget):
                     g[i][j] = INF
 
         for (u, v, w) in graph.edges(data=True):
-            w['weight'] = random.randint(1, 20)
+
+            existingEdge = [e for e in graph.out_edges(v) if e == (v, u)]
+            
+            if(len(existingEdge) == 0 or g[v][u] == INF):
+                w['weight'] = random.randint(1, 20)
+            else:
+                w['weight'] = g[v][u]
+
+            g[u][v] = w['weight']
             w['color'] = random.choice(colors)
             # print(u, v, w['weight'])
-            g[u][v] = w['weight']
+
+        # print()
 
         # Result table
         distance = self.floyd_warshall(g, self.qtdNodesSpinBox.value())
