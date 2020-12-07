@@ -8,6 +8,9 @@ from networkx.generators.stochastic import stochastic_graph
 from networkx.generators.random_graphs import erdos_renyi_graph
 import networkx as nx
 import random
+import numpy as np
+
+INF = 999
 
 class MainWindow(QWidget):
 
@@ -58,8 +61,8 @@ class MainWindow(QWidget):
 
         self.qtdNodesSpinBox = QSpinBox()
         self.qtdNodesSpinBox.setFont(self.font12)
-        self.qtdNodesSpinBox.setMinimum(5)
-        self.qtdNodesSpinBox.setMaximum(15)
+        self.qtdNodesSpinBox.setMinimum(4)
+        self.qtdNodesSpinBox.setMaximum(10)
         self.qtdNodesSpinBox.setObjectName("qtdNodesSpinBox")
         layout.addWidget(self.qtdNodesSpinBox)
 
@@ -96,7 +99,7 @@ class MainWindow(QWidget):
     def generateGraphButton(self):
         self.figure.clf()
         
-        graph = erdos_renyi_graph(self.qtdNodesSpinBox.value(), 0.5,directed=True)
+        graph = erdos_renyi_graph(self.qtdNodesSpinBox.value(), 0.5, directed=True)
 
         stochastic_graph(graph)
 
@@ -112,20 +115,35 @@ class MainWindow(QWidget):
             '#808080'
         ]
 
+        v = self.qtdNodesSpinBox.value()
+        g = np.zeros((v, v)).astype(int)
+
+        for i in range(v):
+            for j in range(v):
+                if i != j:
+                    g[i][j] = INF
+
         for (u, v, w) in graph.edges(data=True):
-            w['weight'] = random.randint(1, 30)
+            w['weight'] = random.randint(1, 20)
             w['color'] = random.choice(colors)
-            # print(u, v, w)
-        
+            # print(u, v, w['weight'])
+            g[u][v] = w['weight']
+
+        # Result table
+        distance = self.floyd_warshall(g, self.qtdNodesSpinBox.value())
+
+        # Print result table on console
+        # self.print_solution(distance, self.qtdNodesSpinBox.value())
+
         pos = dict()
 
-        pos.update( (n, (random.random()*10, random.random()*10)) for i, n in enumerate(set(graph.nodes(data=False))) ) # put nodes from X at x=1
+        pos.update((n, (random.random()*10, random.random()*10)) for i, n in enumerate(set(graph.nodes(data=False)))) # put nodes from X at x=1
         
-        edgeColors = nx.get_edge_attributes(graph,'color')
+        edgeColors = nx.get_edge_attributes(graph, 'color')
         nx.draw(graph, pos=pos, width=1, with_labels=True, edge_color=colors)
 
-        weights = nx.get_edge_attributes(graph,'weight')
-        nx.draw_networkx_edge_labels(graph,pos, edge_labels=weights)
+        weights = nx.get_edge_attributes(graph, 'weight')
+        nx.draw_networkx_edge_labels(graph, pos, edge_labels=weights)
 
         self.canvas.draw_idle()
 
@@ -134,6 +152,24 @@ class MainWindow(QWidget):
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
+
+    def floyd_warshall(self, graph, n_vertices):
+        distance = graph
+        for k in range(n_vertices):
+            for i in range(n_vertices):
+                for j in range(n_vertices):
+                    distance[i][j] = min(distance[i][j], distance[i][k] + distance[k][j])
+        return distance
+
+    def print_solution(self, distance, n_vertices):
+        for i in range(n_vertices):
+            for j in range(n_vertices):
+                if distance[i][j] == INF:
+                    print("INF", end=" ")
+                else:
+                    print(distance[i][j], end="  ")
+            print(" ")
+
 
 if __name__ == '__main__':
 
