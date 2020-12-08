@@ -13,7 +13,12 @@
 O projeto tem como objetivo utilizar os conceitos de grafos e programação dinâmica para gerar uma forma de quiz para auxiliar no estudo da matéria. Através da geração de grafos aleatórios e da utilização do algoritmo de Floyd-Warshall é apresentado para o usuário um grafo, de acordo com a quantidade de nós definida, e uma tabela representando os valores do menor caminho entre dois nós. O usuário deverá completar a tabela com os valores do menor caminho entre os nós e então será apresentado seu resultado.
 
 ## Screenshots
-Adicione 3 ou mais screenshots do projeto em funcionamento.
+#### Tela inicial
+![inital_screen](images/initial_screen.png)
+#### Grafo e tabela
+![grafo](images/grafo.png)
+#### Resultado
+![result](images/result.png)
 
 ## Instalação 
 **Linguagem**: Python<br>
