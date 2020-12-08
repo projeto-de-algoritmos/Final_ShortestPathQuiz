@@ -111,7 +111,6 @@ class MainWindow(QWidget):
                     value.setFlags(value.flags() ^ Qt.ItemIsEditable)
 
                 self.answerTable.setItem(i, j, value)
-                # print(self.answerTable.item(i,j).text())
 
     def reply(self):
         correctTable = self.graph.getCorrectTable()
@@ -133,8 +132,8 @@ class MainWindow(QWidget):
 
         self.graph.floydWarshall()
 
-        # self.graph.printSolution()
-        # print()
+        self.graph.printSolution()
+        print()
 
         self.generateTable(self.graph.getAnswerTable())
 
