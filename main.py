@@ -37,7 +37,7 @@ class MainWindow(QWidget):
 
         buttonLayout = QVBoxLayout()
         buttonsWidget = self.verticalGroupBox
-        buttonsWidget.setFixedWidth(200)
+        buttonsWidget.setFixedWidth(250)
         buttonLayout.addWidget(buttonsWidget)
 
         self.figure = plt.figure()
@@ -67,52 +67,88 @@ class MainWindow(QWidget):
         generateGraphButton = QPushButton('Gerar grafo')
         generateGraphButton.setObjectName('generateGraphButton')
         generateGraphButton.setFont(self.font12)
-        generateGraphButton.clicked.connect(self.generateGraphButton)
+        generateGraphButton.clicked.connect(self.generateGraph)
         layout.addWidget(generateGraphButton)
-        layout.addSpacing(40)
+        layout.addSpacing(60)
 
 
         label = QLabel('Resposta')
         label.setFont(self.font14)
         layout.addWidget(label)
 
-        self.answer = QLineEdit()
-        self.answer.setObjectName('answer')
-        self.answer.setFont(self.font12)
-        layout.addWidget(self.answer)
+        self.answerTable = QTableWidget()
+        self.answerTable.setObjectName('answerTable')
+        self.answerTable.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+
+        font = QFont()
+        font.setPointSize(10)
+
+        self.answerTable.setFont(font)
+        layout.addWidget(self.answerTable)
         layout.addSpacing(10)
 
-        replyButton = QPushButton('Responder')
-        replyButton.setObjectName('replyButton')
-        replyButton.setFont(self.font12)
-        # replyButton.clicked.connect(self.reply)
-        layout.addWidget(replyButton)
+        self.replyButton = QPushButton('Responder')
+        self.replyButton.setObjectName('replyButton')
+        self.replyButton.setFont(self.font12)
+        self.replyButton.clicked.connect(self.reply)
+        self.replyButton.setEnabled(False)
+        layout.addWidget(self.replyButton)
         layout.addSpacing(30)
         
         self.verticalGroupBox.setLayout(layout)
 
-    # def submitCommand(self):
-    #     eval('self.' + str(self.sender().objectName()) + '()')
+    def generateTable(self, table):
+        self.answerTable.setRowCount(len(table))
+        self.answerTable.setColumnCount(len(table))
+        self.answerTable.setVerticalHeaderLabels([str(i) for i in range(len(table))])
+        self.answerTable.setHorizontalHeaderLabels([str(i) for i in range(len(table))])
 
-    def generateGraphButton(self):
+        for i in range(len(table)):
+            for j in range(len(table)):
+                value = QTableWidgetItem(table[i][j])
+                value.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+                if(table[i][j] != ''):
+                    value.setFlags(value.flags() ^ Qt.ItemIsEditable)
+
+                self.answerTable.setItem(i, j, value)
+                # print(self.answerTable.item(i,j).text())
+
+    def reply(self):
+        correctTable = self.graph.getCorrectTable()
+        answerTable = self.graph.getAnswerTable()
+
+        for i in range(len(correctTable)):
+            for j in range(len(correctTable)):
+                if(answerTable[i][j] == ''):
+                    if(self.answerTable.item(i,j).text() == correctTable[i][j]):
+                        self.answerTable.item(i,j).setBackground(Qt.green)
+                    else:
+                        self.answerTable.item(i,j).setBackground(Qt.red)
+
+
+    def generateGraph(self):
         self.figure.clf()
 
-        graph = Graph(self.qtdNodesSpinBox.value())
+        self.graph = Graph(self.qtdNodesSpinBox.value())
 
-        graph.floydWarshall()
-        graph.printSolution()
-        print()
+        self.graph.floydWarshall()
+
+        # self.graph.printSolution()
+        # print()
+
+        self.generateTable(self.graph.getAnswerTable())
 
         pos = dict()
 
-        pos.update((n, (random.random()*10, random.random()*10)) for i, n in enumerate(set(graph.getGraph().nodes(data=False)))) # put nodes from X at x=1
+        pos.update((n, (random.random()*10, random.random()*10)) for i, n in enumerate(set(self.graph.getGraph().nodes(data=False)))) # put nodes from X at x=1
         
-        edgeColors = nx.get_edge_attributes(graph.getGraph(), 'color')
-        nx.draw(graph.getGraph(), pos=pos, width=1, with_labels=True, edge_color=graph.getColors())
+        edgeColors = nx.get_edge_attributes(self.graph.getGraph(), 'color')
+        nx.draw(self.graph.getGraph(), pos=pos, width=1, with_labels=True, edge_color=edgeColors.values())
 
-        weights = nx.get_edge_attributes(graph.getGraph(), 'weight')
-        nx.draw_networkx_edge_labels(graph.getGraph(), pos, edge_labels=weights)
+        weights = nx.get_edge_attributes(self.graph.getGraph(), 'weight')
+        nx.draw_networkx_edge_labels(self.graph.getGraph(), pos, edge_labels=weights)
 
+        self.replyButton.setEnabled(True)
         self.canvas.draw_idle()
 
     def center(self):
@@ -120,24 +156,6 @@ class MainWindow(QWidget):
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
-
-    def floyd_warshall(self, graph, n_vertices):
-        distance = graph
-        for k in range(n_vertices):
-            for i in range(n_vertices):
-                for j in range(n_vertices):
-                    distance[i][j] = min(distance[i][j], distance[i][k] + distance[k][j])
-        return distance
-
-    def print_solution(self, distance, n_vertices):
-        for i in range(n_vertices):
-            for j in range(n_vertices):
-                if distance[i][j] == INF:
-                    print("INF", end=" ")
-                else:
-                    print(distance[i][j], end="  ")
-            print(" ")
-
 
 if __name__ == '__main__':
 
