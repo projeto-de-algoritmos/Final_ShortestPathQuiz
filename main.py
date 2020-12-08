@@ -29,7 +29,7 @@ class MainWindow(QWidget):
 
         self.setGeometry(100, 100, 1280, 800)
         self.center()
-        self.setWindowTitle('Game')
+        self.setWindowTitle('Shortest Path Quiz')
 
         grid = QGridLayout()
         self.setLayout(grid)
