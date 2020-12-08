@@ -28,7 +28,7 @@ O projeto tem como objetivo utilizar os conceitos de grafos e programação din�
     ``` sudo apt-get install python3-pip ```
     
 - Clone o repositório:<br>
-    ``` git clone https://github.com/projeto-de-algoritmos/Final_Dupla14 ```
+    ``` git clone https://github.com/projeto-de-algoritmos/Final_ShortestPathQuiz ```
 
 - Instale as bibliotecas necessárias:<br>
     ``` pip install -r requirements.txt ```
