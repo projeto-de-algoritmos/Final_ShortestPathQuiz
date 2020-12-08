@@ -1,0 +1,6 @@
+numpy==1.19.2
+matplotlib==3.3.2
+networkx==2.5
+PyQt5==5.15.2
+PyQtWebEngine
+virtualenv
