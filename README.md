@@ -29,10 +29,19 @@ Adicione 3 ou mais screenshots do projeto em funcionamento.
     ``` pip install -r requirements.txt ```
 
 ## Uso 
-Explique como usar seu projeto caso haja algum passo a passo após o comando de execução.
+### Para executar o projeto
+Após estar dentro da pasta do projeto e com todas as bibliotecas instaladas, existe os seguintes passos para visualização do projeto: <br>
+1. Entre na pasta do projeto pelo terminal e rode o seguinte comando no terminal: <br>
+    ``` python main.py ```
 
-## Outros 
-Quaisquer outras informações sobre seu projeto podem ser descritas abaixo.
+### Como usar
+1. No canto direito superior da tela ("Quantidade de nós") escolha a quantidade de nós que deseja no grafo.
+2. Clique no botão "Gerar grafo".
+3. O grafo com a quantidade de nós desejados será apresentado à esquerda, juntamente com a tabela com os valores dos menores caminhos entre nós ao lado direito.
+4. Clique nos campos vazios da tabela e digite o valor do menos caminho entre os 2 nós especificados.
+5. Após preencher a tabela, clique no botão "Responder".
+6. Será apresentado de verde os campos com valores corretos e de vermelho os campos com valores incorretos.
+7. Caso deseje, altere os valores e clique novamente no botão "Responder" para comparar novamente suas respostas.
 
 
 
